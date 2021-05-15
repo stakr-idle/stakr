@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Stakr | Real money idle game</title>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="abis.js"></script>
+    <script type="text/javascript">if(window.ethereum){
+        web3=new Web3(window.ethereum);
+        try{window.ethereum.enable().then(function(){});}catch(e){}}else if(window.web3){
+            web3=new Web3(web3.currentProvider);}else{alert('You must connect to Web3!');
+        }const BN=web3.utils.BN;
+        if(window.ethereum){
+            var first=true;
+            var progressPer=100;
+            var wbnbAddress="0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+            var busdAddress="0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+            var milkContractAddress="0xb7CEF49d89321e22dd3F51a212d58398Ad542640";
+            var butterContractAddress="0x0110fF9e7E4028a5337F07841437B92d5bf53762";
+            var milkLPaddress="0x18e13207ef3032275cbca9f210b2fb513d3ba1b1";
+            var butterLPaddress="0xe1bd982afea7fba7a5b875e0a226cc38c7e9a7f2";
+            var pancakeAddress="0x1B96B92314C44b159149f7E0303511fB2Fc4774f";
+
+            var yeetContractAddress = "0x7060d3f1cc70a07f4768560b9d9b692ac29244de";
+            var yeetLPaddress = "0x2f0fb322b298df6c4ec2c25727b9fe6909b66000"
+
+            var butterContract=new web3.eth.Contract(JSON.parse(butterABI),butterContractAddress);
+            var milkContract=new web3.eth.Contract(JSON.parse(milkABI),milkContractAddress);
+            var yeetContract=new web3.eth.Contract(JSON.parse(yeetABI).abi,yeetContractAddress);
+            var wbnbContract=new web3.eth.Contract(JSON.parse(wbnbABI),wbnbAddress);
+            var busdContract=new web3.eth.Contract(JSON.parse(busdABI),busdAddress);
+            var milkTokenBalance;
+            var milkTokenDecimals;
+            var butterTokenBalance;
+            var butterTokenDecimals;
+            var stakedMilk;
+            var earnedButter;
+            var milkTokenBalanceString;
+            var butterTokenBalanceString;
+            var stakedMilkString;
+            var earnedButterString;
+            var totalMilkString;
+            var totalButterString;
+            var totalMilk;
+            var totalButter;
+            var totalMilkFloat;
+            var totalButterFloat;
+            var milkPrice;
+            var butterPrice;
+            var bnbPrice;
+            var milkValue;
+            var butterValue;
+            var totalValue;
+            var yeetTokenBalance;
+            var account=window.ethereum.selectedAddress;
+            if(!window.ethereum.isTrust){
+                var accountInterval=setInterval(function(){account=window.ethereum.selectedAddress;},100);
+            }else{
+                var accountInterval=setInterval(function(){account=window.ethereum.address;},100);
+            }
+            setTimeout(updateSite,200);
+            async function getMilkBalance(){
+                milkTokenBalance=await milkContract.methods.balanceOf(account).call();
+                milkTokenDecimals=await milkContract.methods.decimals().call();
+                var balanceWeiString=milkTokenBalance.toString();
+                var balanceWeiBN=new BN(balanceWeiString);
+                var decimalsBN=new BN(milkTokenDecimals);
+                var divisor=new BN(10).pow(decimalsBN);
+                var beforeDecimal=balanceWeiBN.div(divisor);
+                var afterDecimal=balanceWeiBN.mod(divisor);
+                afterDecimal=afterDecimal.toString();
+                var s="00000000"+afterDecimal;
+                afterDecimal=s.substr(s.length-9);
+                milkTokenBalanceString=beforeDecimal;
+            }
+
+            async function getYeetBalance(){
+                var tokenBalance=await yeetContract.methods.balanceOf(account).call();
+                var tokenDecimals=await yeetContract.methods.decimals().call();
+                var balanceWeiString=tokenBalance.toString();
+                var balanceWeiBN=new BN(balanceWeiString);
+                var decimalsBN=new BN(tokenDecimals);
+                var divisor=new BN(10).pow(decimalsBN);
+                var beforeDecimal=balanceWeiBN.div(divisor);
+                var afterDecimal=balanceWeiBN.mod(divisor);
+                afterDecimal=afterDecimal.toString();
+                var s="00000000"+afterDecimal;
+                afterDecimal=s.substr(s.length-9);
+                tokenBalanceString=beforeDecimal;
+                yeetTokenBalance = tokenBalanceString;
+            }
+
+            async function getButterBalance(){butterTokenBalance=await butterContract.methods.balanceOf(account).call();butterTokenDecimals=await butterContract.methods.decimals().call();var balanceWeiString=butterTokenBalance.toString();var balanceWeiBN=new BN(balanceWeiString);var decimalsBN=new BN(butterTokenDecimals);var divisor=new BN(10).pow(decimalsBN);var beforeDecimal=balanceWeiBN.div(divisor).toString();var afterDecimal=balanceWeiBN.mod(divisor);afterDecimal=afterDecimal.toString();var s="00000000"+afterDecimal;afterDecimal=s.substr(s.length-9);butterTokenBalanceString=beforeDecimal;}
+            async function getStakedMilk(){stakedMilk=await butterContract.methods._addressStakedMilk(account).call({from:account});milkTokenDecimals=await milkContract.methods.decimals().call();var balanceWeiString=stakedMilk.toString();var balanceWeiBN=new BN(balanceWeiString);var decimalsBN=new BN(milkTokenDecimals);var divisor=new BN(10).pow(decimalsBN);var beforeDecimal=balanceWeiBN.div(divisor).toString();var afterDecimal=balanceWeiBN.mod(divisor);afterDecimal=afterDecimal.toString();var s="00000000"+afterDecimal;afterDecimal=s.substr(s.length-9);stakedMilkString=beforeDecimal;}
+            async function getEarnedButter(){earnedButter=await butterContract.methods._currentRewards(account).call({from:account});butterTokenDecimals=await butterContract.methods.decimals().call();var balanceWeiString=earnedButter.toString();var balanceWeiBN=new BN(balanceWeiString);var decimalsBN=new BN(butterTokenDecimals);var divisor=new BN(10).pow(decimalsBN);var beforeDecimal=balanceWeiBN.div(divisor).toString();var afterDecimal=balanceWeiBN.mod(divisor);afterDecimal=afterDecimal.toString();var s="00000000"+afterDecimal;afterDecimal=s.substr(s.length-9);earnedButterString=beforeDecimal;}
+            async function getTotals(){totalMilk=BigInt(milkTokenBalance)+BigInt(stakedMilk);totalButter=BigInt(butterTokenBalance)+BigInt(earnedButter);var totalMilkTruncated=totalMilk/BigInt(10**9);var totalButterTruncated=totalButter/BigInt(10**9);totalMilkString=totalMilkTruncated.toString();totalButterString=totalButterTruncated.toString();totalMilkFloat=parseFloat(totalMilkString);totalButterFloat=parseFloat(totalButterString);}
+            async function getPrices(){
+                var yeetBNBamount=await wbnbContract.methods.balanceOf(yeetLPaddress).call();
+                var yeetAmount=await yeetContract.methods.balanceOf(yeetLPaddress).call();
+                var butterBNBamount=await wbnbContract.methods.balanceOf(butterLPaddress).call();
+                var milkBNBamount=await wbnbContract.methods.balanceOf(milkLPaddress).call();
+                var milkAmount=await milkContract.methods.balanceOf(milkLPaddress).call();
+                var butterAmount=await butterContract.methods.balanceOf(butterLPaddress).call();
+                var bnbAmount=await wbnbContract.methods.balanceOf(pancakeAddress).call();
+                var busdAmount=await busdContract.methods.balanceOf(pancakeAddress).call();
+                bnbPrice=parseFloat(busdAmount)/parseFloat(bnbAmount);
+                milkAmount=parseFloat(milkAmount)*parseFloat(10**(18-9));
+                butterAmount=parseFloat(butterAmount)*parseFloat(10**(18-9));
+                yeetAmount=parseFloat(yeetAmount)*parseFloat(10**(18-9));
+                milkPrice=milkBNBamount/milkAmount*bnbPrice;
+                butterPrice=butterBNBamount/butterAmount*bnbPrice;
+                yeetPrice=yeetBNBamount/yeetAmount*bnbPrice;
+                milkValue=totalMilkFloat*milkPrice;
+                butterValue=totalButterFloat*butterPrice;
+                totalValue=milkValue+butterValue;
+                totalValue=totalValue.toFixed(2);}
+            async function updateSite(){
+                try {
+                    var oldMilk = milkTokenBalanceString
+                    var oldButter = butterTokenBalanceString
+                    var oldYeet = yeetTokenBalance
+
+
+                    console.log('updating site')
+                    await getMilkBalance();
+                    await getButterBalance();
+                    await getYeetBalance();
+                    await getEarnedButter();
+                    await getStakedMilk();
+                    await getTotals();
+                    await getPrices();
+                    document.getElementById("milkwallet").innerText=parseFloat(milkTokenBalanceString).toLocaleString();
+                    document.getElementById("milkprice").innerText=`$${parseFloat(milkPrice).toFixed(18)}`;
+                    document.getElementById("butterprice").innerText=`$${parseFloat(butterPrice).toFixed(18)}`;
+                    document.getElementById("stakedmilk").innerText=parseFloat(stakedMilkString).toLocaleString();
+                    document.getElementById("butterwallet").innerText=parseFloat(butterTokenBalanceString).toLocaleString();
+                    document.getElementById("yeetwallet").innerText=parseFloat(yeetTokenBalance).toLocaleString();
+                    document.getElementById("yeetprice").innerText=`$${parseFloat(yeetPrice).toFixed(18)}`;
+                    document.getElementById("butterrewards").innerText=parseFloat(earnedButterString).toLocaleString();
+                    // document.getElementById("totalmilk").innerText=parseFloat(totalMilkString).toLocaleString();
+                    // document.getElementById("totalbutter").innerText=parseFloat(totalButterString).toLocaleString();
+                    // document.getElementById("milkusd").innerText="$"+milkValue.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                    // document.getElementById("butterusd").innerText="$"+butterValue.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+                    // document.getElementById("totalusd").innerText="$"+totalValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+
+                    var earnedMilk = parseFloat(milkTokenBalanceString) - parseFloat(oldMilk)
+                    var earnedButter = parseFloat(butterTokenBalanceString) - parseFloat(oldButter)
+                    var earnedYeet = parseFloat(yeetTokenBalance) - parseFloat(oldYeet)
+
+                    if (earnedButter > 0 || earnedMilk > 0 || earnedYeet > 0) {
+                        document.getElementById("earned").innerHTML=`
+                            You just earned:<br /><br />
+                            ${earnedMilk > 0 ? `${earnedMilk.toLocaleString()} Milk<br />` : ''}
+                            ${earnedButter > 0 ? `${earnedButter.toLocaleString()} Butter<br />` : ''}
+                            ${earnedYeet > 0 ? `${earnedYeet.toLocaleString()} Yeet<br />` : ''}
+                            <br />
+                            Which is worth
+                            $${(
+                                earnedMilk * milkPrice +
+                                earnedButter * butterPrice +
+                                earnedYeet * yeetPrice
+                            ).toFixed(12)}
+                        `
+                        $('.toast').toast('show');
+                    } else if (!first) {
+                        document.getElementById("earned").innerHTML = 'No earnings unfortunately! Maybe in 10 seconds :)';
+                        $('.toast').toast('show');
+                    }
+                    
+                    first = false;
+                    setTimeout(updateSite, 10000)
+
+                    progressPer=100;
+                } catch (e) {
+                    $('#error').html('Could not load wallet. Are you on the Binance Smart Chain? Please switch network and reload the page.');
+                }
+            }
+        }
+        
+        setInterval(() => {
+            progressPer -= 1
+
+            $('#progress').css({width: `${progressPer}%`});
+        },100)
+        
+        </script>
+   </script>
+
+   </head>
+   <body>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                  <h1 class="display-4">Stakr</h1>
+                  <p class="lead">
+                        Real money idle game! Buy the tokens below on Binance Smart Chain and watch the numbers go up. These are reflection tokens, so holders
+                        automatically get a percentage of the transacted amount.
+                  </p>
+                  <p class="lead" id="error" style="color:red"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="progress">
+                <div id="progress" class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <br />
+        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+            <img src="./images/milk.png" class="card-img-top" alt="..." style="width:200px;margin:0 auto;">
+            <div class="card-body">
+                <h5 class="card-title">Milk</h5>
+                <p class="card-text">
+                    Unstaked Milk earns Milk, while staked Milk earns Butter. You can stake max. 50% Milk into Butter.
+                </p>
+                <p class="card-text">
+                    <table style="width:100%">
+                        <tr><td>Unstaked</td><td><span id="milkwallet"></span></td></tr>
+                        <tr><td>Staked</td><td><span id="stakedmilk"></span></td></tr>
+                        <tr><td>Price</td><td><span id="milkprice"></span></td></tr>
+                    </table>
+                </p>
+                <a href="https://www.milktoken.net/index.html#hero" target="_blank" class="btn btn-primary">Milk Website</a><br /><br />
+                <a href="https://www.milktoken.net/churn.html" target="_blank" class="btn btn-primary">Stake Milk into Butter</a><br /><br />
+                <a href="https://bogged.finance/swap?token=0xb7CEF49d89321e22dd3F51a212d58398Ad542640" target="_blank" class="btn btn-primary">Trade on Bogged Finance (7% slippage)</a>
+            </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+            <img src="./images/butter.png" class="card-img-top" alt="..." style="width:200px;margin:0 auto;">
+            <div class="card-body">
+                <h5 class="card-title">Butter</h5>
+                <p class="card-text">
+                    Butter transactions go to charity and can be earned from milk, but they do not earn more Butter.
+                    Butter can also be used to vote.
+                </p>
+                <p class="card-text">
+                    <table style="width:100%">
+                        <tr><td>In wallet</td><td><span id="butterwallet"></span></td></tr>
+                        <tr><td>Earned from milk</td><td><span id="butterrewards"></span></td></tr>
+                        <tr><td>Price</td><td><span id="butterprice"></span></td></tr>
+                    </table>
+                </p>
+                <a href="https://www.milktoken.net/index.html#hero" target="_blank" class="btn btn-primary">Butter Website</a><br /><br />
+                <a href="https://www.milktoken.net/churn.html" target="_blank" class="btn btn-primary">Claim Butter</a><br /><br />
+                <a href="https://bogged.finance/swap?token=0x0110ff9e7e4028a5337f07841437b92d5bf53762" target="_blank" class="btn btn-primary">Trade on Bogged Finance (11% slippage)</a>
+            </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+            <img src="./images/yeet.webp" class="card-img-top" alt="..." style="width:200px;margin:0 auto;">
+            <div class="card-body">
+                <h5 class="card-title">YEET</h5>
+                <p class="card-text">
+                    Holding YEET earns more YEET!
+                </p>
+                <p class="card-text">
+                    <table style="width:100%">
+                        <tr><td>In wallet</td><td><span id="yeetwallet"></span></td></tr>
+                        <tr><td>Price</td><td><span id="yeetprice"></span></td></tr>
+                    </table>
+                </p>
+                <a href="https://www.yeettoken.com/" target="_blank" class="btn btn-primary">YEET Website</a><br /><br />
+                <a href="https://bogged.finance/swap?token=0x7060d3f1cc70a07f4768560b9d9b692ac29244de" target="_blank" class="btn btn-primary">Trade on Bogged Finance (8-11% slippage)</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+    <div class="toast-container position-absolute bottom-0 end-0 p-3">
+  
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Earnings!</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <span id="earned"></span>
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+   </body>
+</html>
