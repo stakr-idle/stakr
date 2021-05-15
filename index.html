@@ -126,7 +126,7 @@
             async function updateSite(){
                 try {
                     var oldMilk = milkTokenBalanceString
-                    var oldButter = butterTokenBalanceString
+                    var oldButter = earnedButterString
                     var oldYeet = yeetTokenBalance
 
 
@@ -153,7 +153,7 @@
                     // document.getElementById("totalusd").innerText="$"+totalValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
 
                     var earnedMilk = parseFloat(milkTokenBalanceString) - parseFloat(oldMilk)
-                    var earnedButter = parseFloat(butterTokenBalanceString) - parseFloat(oldButter)
+                    var earnedButter = parseFloat(earnedButterString) - parseFloat(oldButter)
                     var earnedYeet = parseFloat(yeetTokenBalance) - parseFloat(oldYeet)
 
                     if (earnedButter > 0 || earnedMilk > 0 || earnedYeet > 0) {
