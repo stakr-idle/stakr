@@ -181,7 +181,8 @@
 
                     progressPer=100;
                 } catch (e) {
-                    $('#error').html('Could not load wallet. Are you on the Binance Smart Chain? Please switch network and reload the page.');
+                    $('#error').html('Could not load wallet. Please approve and check that you are on the Binance Smart Chain. Then wait a bit or reload the page.');
+                    setTimeout(updateSite, 10000)
                 }
             }
         }
